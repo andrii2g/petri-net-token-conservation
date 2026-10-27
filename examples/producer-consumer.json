@@ -1,0 +1,13 @@
+{
+  "name": "Producer and consumer with a three-slot buffer",
+  "places": [
+    { "id": "empty", "initial": 3 },
+    { "id": "full", "initial": 0 },
+    { "id": "producer", "initial": 1 },
+    { "id": "consumer", "initial": 1 }
+  ],
+  "transitions": [
+    { "id": "produce", "inputs": { "empty": 1, "producer": 1 }, "outputs": { "full": 1, "producer": 1 } },
+    { "id": "consume", "inputs": { "full": 1, "consumer": 1 }, "outputs": { "empty": 1, "consumer": 1 } }
+  ]
+}

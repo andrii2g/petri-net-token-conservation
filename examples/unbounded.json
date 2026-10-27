@@ -1,0 +1,5 @@
+{
+  "name": "Unbounded token source demonstrating exploration limits",
+  "places": [ { "id": "tokens", "initial": 0 } ],
+  "transitions": [ { "id": "create", "inputs": {}, "outputs": { "tokens": 1 } } ]
+}

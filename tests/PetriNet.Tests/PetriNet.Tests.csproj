@@ -22,4 +22,7 @@
     <ProjectReference Include="..\..\src\PetriNet.Core\PetriNet.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="../../examples/*.json" Link="examples/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

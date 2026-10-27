@@ -1,0 +1,17 @@
+{
+  "name": "Atomic acquisition of two shared resources",
+  "places": [
+    { "id": "r1", "initial": 1 },
+    { "id": "r2", "initial": 1 },
+    { "id": "aIdle", "initial": 1 },
+    { "id": "aWorking", "initial": 0 },
+    { "id": "bIdle", "initial": 1 },
+    { "id": "bWorking", "initial": 0 }
+  ],
+  "transitions": [
+    { "id": "startA", "inputs": { "r1": 1, "r2": 1, "aIdle": 1 }, "outputs": { "aWorking": 1 } },
+    { "id": "finishA", "inputs": { "aWorking": 1 }, "outputs": { "r1": 1, "r2": 1, "aIdle": 1 } },
+    { "id": "startB", "inputs": { "r1": 1, "r2": 1, "bIdle": 1 }, "outputs": { "bWorking": 1 } },
+    { "id": "finishB", "inputs": { "bWorking": 1 }, "outputs": { "r1": 1, "r2": 1, "bIdle": 1 } }
+  ]
+}

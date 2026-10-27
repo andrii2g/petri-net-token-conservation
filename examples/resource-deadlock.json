@@ -1,0 +1,21 @@
+{
+  "name": "Opposite resource acquisition orders can deadlock",
+  "places": [
+    { "id": "r1", "initial": 1 },
+    { "id": "r2", "initial": 1 },
+    { "id": "aIdle", "initial": 1 },
+    { "id": "aHasR1", "initial": 0 },
+    { "id": "aHasBoth", "initial": 0 },
+    { "id": "bIdle", "initial": 1 },
+    { "id": "bHasR2", "initial": 0 },
+    { "id": "bHasBoth", "initial": 0 }
+  ],
+  "transitions": [
+    { "id": "takeR1A", "inputs": { "aIdle": 1, "r1": 1 }, "outputs": { "aHasR1": 1 } },
+    { "id": "takeR2A", "inputs": { "aHasR1": 1, "r2": 1 }, "outputs": { "aHasBoth": 1 } },
+    { "id": "releaseA", "inputs": { "aHasBoth": 1 }, "outputs": { "aIdle": 1, "r1": 1, "r2": 1 } },
+    { "id": "takeR2B", "inputs": { "bIdle": 1, "r2": 1 }, "outputs": { "bHasR2": 1 } },
+    { "id": "takeR1B", "inputs": { "bHasR2": 1, "r1": 1 }, "outputs": { "bHasBoth": 1 } },
+    { "id": "releaseB", "inputs": { "bHasBoth": 1 }, "outputs": { "bIdle": 1, "r1": 1, "r2": 1 } }
+  ]
+}
