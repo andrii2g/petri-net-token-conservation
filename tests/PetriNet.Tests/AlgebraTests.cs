@@ -65,4 +65,37 @@ public class AlgebraTests
         Assert.Empty(result.Invariants);
         Assert.False(result.ProvesBounded);
     }
+
+    [Fact]
+    public void RandomSmallMatricesHaveExactNullspaceAndExpectedDimension()
+    {
+        // Compare rank with an independent nonzero-minor calculation for 2x3 matrices.
+        var random = new Random(1729);
+        for (var sample = 0; sample < 100; sample++)
+        {
+            var matrix = new BigInteger[2, 3];
+            for (var r = 0; r < 2; r++)
+                for (var c = 0; c < 3; c++) matrix[r, c] = random.Next(-4, 5);
+            var rank = matrix.Cast<BigInteger>().Any(x => x != 0) ? 1 : 0;
+            for (var a = 0; a < 3; a++)
+                for (var b = a + 1; b < 3; b++)
+                    if (matrix[0, a] * matrix[1, b] != matrix[0, b] * matrix[1, a]) rank = 2;
+            var basis = InvariantAnalyzer.Nullspace(matrix);
+            Assert.Equal(3 - rank, basis.Count);
+            foreach (var vector in basis)
+                for (var r = 0; r < 2; r++)
+                {
+                    Rational total = 0;
+                    for (var c = 0; c < 3; c++) total += matrix[r, c] * vector[c];
+                    Assert.True(total.IsZero);
+                }
+        }
+    }
+
+    [Fact]
+    public void NullspaceHonorsCancellation()
+    {
+        Assert.Throws<OperationCanceledException>(() =>
+            InvariantAnalyzer.Nullspace(new BigInteger[2, 3], new CancellationToken(true)));
+    }
 }

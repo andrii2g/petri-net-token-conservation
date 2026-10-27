@@ -127,11 +127,15 @@ public static class SvgRenderer
     public static XDocument Reachability(Net net, ExplorationResult result)
     {
         if (result.States.Count > 100 || result.Edges.Count > 500) throw new ArgumentException("Graph exceeds SVG limits.");
-        const int columns = 4;
-        const int cellWidth = 270;
-        var rows = (result.States.Count + columns - 1) / columns;
-        Position Point(int id) => new(145 + id % columns * cellWidth, 165 + id / columns * 170);
-        var root = Canvas(columns * cellWidth + 40, rows * 170 + 170, "Reachability graph",
+        var radius = Math.Max(200, result.States.Count * 35);
+        var centerX = radius + 150;
+        var centerY = radius + 160;
+        Position Point(int id)
+        {
+            var angle = -Math.PI / 2 + id * 2 * Math.PI / result.States.Count;
+            return new Position(centerX + radius * Math.Cos(angle), centerY + radius * Math.Sin(angle));
+        }
+        var root = Canvas(2 * radius + 300, 2 * radius + 290, "Reachability graph",
             $"{net.Name} · {result.Status} · red: terminal · edges labeled by transition ID");
         foreach (var edge in result.Edges)
         {
@@ -142,7 +146,7 @@ public static class SvgRenderer
             {
                 root.Add(E("path", A("d", $"M {F(from.X - 15)} {F(from.Y - 32)} c -65 -80 95 -80 30 0"),
                     A("fill", "none"), A("stroke", "#64748b"), A("marker-end", "url(#arrow)")));
-                root.Add(Text(from.X, from.Y - 95, label, 12, "middle"));
+                root.Add(Text(from.X + 65, from.Y - 55, label, 12, "middle"));
             }
             else
             {
@@ -164,7 +168,7 @@ public static class SvgRenderer
             root.Add(Text(point.X, point.Y + 5, $"s{s}", 18, "middle"));
             root.Add(Text(point.X, point.Y + 64, result.States[s].ToString(), 12, "middle"));
         }
-        root.Add(Text(28, rows * 170 + 140, "Token vector order: " + string.Join(", ", net.Places.Select(p => p.Id)), 12));
+        root.Add(Text(28, 2 * radius + 260, "Token vector order: " + string.Join(", ", net.Places.Select(p => p.Id)), 12));
         return new XDocument(root);
     }
 }

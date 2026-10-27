@@ -33,7 +33,8 @@ public sealed record InvariantAnalysis(
     IReadOnlyList<BigInteger?> PlaceBounds,
     long CombinationsTried,
     bool SearchTruncated,
-    TimeSpan Runtime)
+    TimeSpan Runtime,
+    InvariantOptions Options)
 {
     public bool ProvesBounded => PlaceBounds.All(b => b.HasValue);
 }
@@ -41,7 +42,8 @@ public sealed record InvariantAnalysis(
 public static class InvariantAnalyzer
 {
     /// <summary>RREF over exact rationals; one nullspace vector per free column.</summary>
-    public static IReadOnlyList<IReadOnlyList<Rational>> Nullspace(BigInteger[,] matrix)
+    public static IReadOnlyList<IReadOnlyList<Rational>> Nullspace(BigInteger[,] matrix,
+        CancellationToken cancellationToken = default)
     {
         var rows = matrix.GetLength(0);
         var columns = matrix.GetLength(1);
@@ -51,6 +53,7 @@ public static class InvariantAnalyzer
         var pivots = new List<int>();
         for (var c = 0; c < columns && pivots.Count < rows; c++)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var row = pivots.Count;
             var pivot = row;
             while (pivot < rows && a[pivot, c].IsZero) pivot++;
@@ -60,6 +63,7 @@ public static class InvariantAnalyzer
             for (var j = 0; j < columns; j++) a[row, j] /= scale;
             for (var r = 0; r < rows; r++)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (r == row || a[r, c].IsZero) continue;
                 var factor = a[r, c];
                 for (var j = 0; j < columns; j++) a[r, j] -= factor * a[row, j];
@@ -69,6 +73,7 @@ public static class InvariantAnalyzer
         var basis = new List<IReadOnlyList<Rational>>();
         for (var free = 0; free < columns; free++)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (pivots.Contains(free)) continue;
             var vector = new Rational[columns];
             vector[free] = 1;
@@ -91,7 +96,7 @@ public static class InvariantAnalyzer
         var transpose = new BigInteger[net.Transitions.Count, net.Places.Count];
         for (var p = 0; p < net.Places.Count; p++)
             for (var t = 0; t < net.Transitions.Count; t++) transpose[t, p] = incidence[p, t];
-        var basis = Nullspace(transpose).Select(Primitive).ToArray();
+        var basis = Nullspace(transpose, cancellationToken).Select(Primitive).ToArray();
         var found = new Dictionary<string, PlaceInvariant>(StringComparer.Ordinal);
 
         void Consider(BigInteger[] candidate)
@@ -133,7 +138,7 @@ public static class InvariantAnalyzer
                     if (!bounds[p].HasValue || bound < bounds[p]!.Value) bounds[p] = bound;
                 }
         return new InvariantAnalysis(Array.AsReadOnly(basis.Select(v => (IReadOnlyList<BigInteger>)Array.AsReadOnly(v)).ToArray()),
-            Array.AsReadOnly(invariants), Array.AsReadOnly(bounds), tried, !done, watch.Elapsed);
+            Array.AsReadOnly(invariants), Array.AsReadOnly(bounds), tried, !done, watch.Elapsed, options);
     }
 
     public static bool IsInvariant(Net net, IReadOnlyList<BigInteger> weights)
