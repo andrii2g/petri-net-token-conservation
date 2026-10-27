@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PetriNet.Cli/PetriNet.Cli.csproj" />
+    <Project Path="src/PetriNet.Core/PetriNet.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PetriNet.Tests/PetriNet.Tests.csproj" />
+  </Folder>
+</Solution>
