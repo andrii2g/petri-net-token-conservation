@@ -8,7 +8,7 @@ public static class Commands
 {
     private const string Help = """
         Petri Net Token Conservation (.NET 10)
-        Usage: petri <command> <net.json> [options]
+        Usage: PetriNet.Cli <command> <net.json> [options]
           validate     Validate JSON and token-flow structure
           invariants   Print incidence matrix, exact basis and conservation laws
           explore      Explore reachable markings and report terminal states
