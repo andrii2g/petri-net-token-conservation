@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PetriNet.Core\PetriNet.Core.csproj" />
+    <ProjectReference Include="..\..\src\PetriNet.Cli\PetriNet.Cli.csproj" />
   </ItemGroup>
 
   <ItemGroup>
